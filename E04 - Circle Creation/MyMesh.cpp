@@ -16,6 +16,10 @@ void MyMesh::GenerateCircle(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 		Calculate a_nSubdivisions number of points around a center point in a radial manner
 		then call the AddTri function to generate a_nSubdivision number of faces
 	*/
+	float fCentralAngle = (float)(360 / a_nSubdivisions); //Get the central angle of the triangles in degrees
+	fCentralAngle = fCentralAngle*(M_PI / 180); //Convert the angle to radians
+
+
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);

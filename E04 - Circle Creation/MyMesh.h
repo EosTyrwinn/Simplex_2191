@@ -4,8 +4,10 @@ Date: 2017/05
 ----------------------------------------------*/
 #ifndef __MYMESH_H_
 #define __MYMESH_H_
+#define _USE_MATH_DEFINES
 
 #include "Definitions.h"
+#include <math.h>
 
 class MyMesh
 {
