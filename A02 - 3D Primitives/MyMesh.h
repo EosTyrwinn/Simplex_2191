@@ -4,8 +4,9 @@ Date: 2017/05
 ----------------------------------------------*/
 #ifndef __MYMESH_H_
 #define __MYMESH_H_
+#define _USE_MATH_DEFINES
 
-#define USEBASICX
+//#define USEBASICX
 #ifdef USEBASICX
 #include "BasicX\BasicX.h"
 using namespace BasicX;
@@ -20,6 +21,7 @@ using namespace Simplex;
 
 #include "ControllerConfiguration.h"
 #include "imgui\ImGuiObject.h"
+#include <math.h>
 
 class MyMesh
 {

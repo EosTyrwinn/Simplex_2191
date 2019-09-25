@@ -275,9 +275,19 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
-	// -------------------------------
+	//Make cone
+	float fAngle = (float)((2 * M_PI) / a_nSubdivisions); //Get the central angle of the triangles in radians
+
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		glm::vec3 point1 = glm::vec3(0, -(a_fHeight / 2), 0);
+		glm::vec3 point2 = glm::vec3(cos(i * fAngle) * a_fRadius, -(a_fHeight / 2), sin(i * fAngle) * a_fRadius);
+		glm::vec3 point3 = glm::vec3(cos((i + 1) * fAngle) * a_fRadius, -(a_fHeight / 2), sin((i + 1) * fAngle) * a_fRadius);
+		glm::vec3 point4 = glm::vec3(0, (a_fHeight/2), 0);
+		AddTri(point1, point2, point3);
+		AddTri(point4, point3, point2);
+
+	}
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
@@ -299,9 +309,21 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
-	// -------------------------------
+	//Make Cylinder
+	float fAngle = (float)((2 * M_PI) / a_nSubdivisions); //Get the central angle of the triangles in radians
+
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		glm::vec3 point1 = glm::vec3(0, -(a_fHeight/2), 0);
+		glm::vec3 point2 = glm::vec3(cos(i * fAngle) * a_fRadius, -(a_fHeight / 2), sin(i * fAngle) * a_fRadius);
+		glm::vec3 point3 = glm::vec3(cos((i + 1) * fAngle) * a_fRadius, -(a_fHeight / 2), sin((i + 1) * fAngle) * a_fRadius);
+		glm::vec3 point4 = glm::vec3(0, (a_fHeight/2), 0);
+		glm::vec3 point5 = glm::vec3(cos(i * fAngle) * a_fRadius, (a_fHeight / 2), sin(i * fAngle) * a_fRadius);
+		glm::vec3 point6 = glm::vec3(cos((i + 1) * fAngle) * a_fRadius, (a_fHeight / 2), sin((i + 1) * fAngle) * a_fRadius);
+		AddTri(point1, point2, point3);
+		AddTri(point4, point6, point5);
+		AddQuad(point3, point2, point6, point5);
+	}
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
@@ -329,9 +351,27 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
-	// -------------------------------
+	//Make Tube
+	float fAngle = (float)((2 * M_PI) / a_nSubdivisions); //Get the central angle of the triangles in radians
+
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		//Bottom ring points
+		glm::vec3 point1 = glm::vec3(cos(i * fAngle) * a_fOuterRadius, -(a_fHeight / 2), sin(i * fAngle) * a_fOuterRadius);
+		glm::vec3 point2 = glm::vec3(cos((i + 1) * fAngle) * a_fOuterRadius, -(a_fHeight / 2), sin((i + 1) * fAngle) * a_fOuterRadius);
+		glm::vec3 point3 = glm::vec3(cos(i * fAngle) * a_fInnerRadius, -(a_fHeight / 2), sin(i * fAngle) * a_fInnerRadius);
+		glm::vec3 point4 = glm::vec3(cos((i + 1) * fAngle) * a_fInnerRadius, -(a_fHeight / 2), sin((i + 1) * fAngle) * a_fInnerRadius);
+		//Top ring points
+		glm::vec3 point5 = glm::vec3(cos(i * fAngle) * a_fOuterRadius, (a_fHeight / 2), sin(i * fAngle) * a_fOuterRadius);
+		glm::vec3 point6 = glm::vec3(cos((i + 1) * fAngle) * a_fOuterRadius, (a_fHeight / 2), sin((i + 1) * fAngle) * a_fOuterRadius);
+		glm::vec3 point7 = glm::vec3(cos(i * fAngle) * a_fInnerRadius, (a_fHeight / 2), sin(i * fAngle) * a_fInnerRadius);
+		glm::vec3 point8 = glm::vec3(cos((i + 1) * fAngle) * a_fInnerRadius, (a_fHeight / 2), sin((i + 1) * fAngle) * a_fInnerRadius);
+		//Make quads
+		AddQuad(point1, point2, point3, point4);
+		AddQuad(point5, point7, point6, point8);
+		AddQuad(point1, point5, point2, point6);
+		AddQuad(point3, point4, point7, point8);
+	}
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
@@ -386,10 +426,65 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
-	// -------------------------------
 
+	std::cout << a_fRadius << "   " << a_nSubdivisions << std::endl;
+	//Make Sphere
+	float fAngle = (float)((2 * M_PI) / a_nSubdivisions); //Get the central angle of the triangles in radians
+	float fDivs = 1.0f / a_nSubdivisions;
+	float fBase = a_fRadius / 2.0f;
+	for (int j = 0; j <= a_nSubdivisions; j++)
+	{
+		for (int i = 0; i <= a_nSubdivisions; i++)
+		{
+			//Front
+			glm::vec3 point1 = glm::vec3(-fBase + (i * fDivs), -fBase + (j * fDivs), a_fRadius);
+			glm::vec3 point2 = glm::vec3(-fBase + ((i + 1) * fDivs), -fBase + (j * fDivs), a_fRadius);
+			glm::vec3 point3 = glm::vec3(-fBase + (i * fDivs), -fBase + ((j + 1) * fDivs), a_fRadius);
+			glm::vec3 point4 = glm::vec3(-fBase + ((i + 1) * fDivs), -fBase + ((j + 1) * fDivs), a_fRadius);
+
+			AddQuad(point1, point2, point3, point4);
+
+			//Back
+			point1.z = -point1.z;
+			point2.z = -point2.z;
+			point3.z = -point3.z;
+			point4.z = -point4.z;
+
+			AddQuad(point2, point1, point4, point3);
+
+			//Right
+			point1 = glm::vec3(a_fRadius, -fBase + (j * fDivs), -fBase + (i * fDivs));
+			point2 = glm::vec3(a_fRadius, -fBase + (j * fDivs), -fBase + ((i + 1) * fDivs));
+			point3 = glm::vec3(a_fRadius, -fBase + ((j + 1) * fDivs), -fBase + (i * fDivs));
+			point4 = glm::vec3(a_fRadius, -fBase + ((j + 1) * fDivs), -fBase + ((i + 1) * fDivs));
+			
+			AddQuad(point2, point1, point4, point3);
+
+			//Left
+			point1.x = -point1.x;
+			point2.x = -point2.x;
+			point3.x = -point3.x;
+			point4.x = -point4.x;
+
+			AddQuad(point1, point2, point3, point4);
+
+			//Top
+			point1 = glm::vec3(-fBase + (i * fDivs), a_fRadius, -fBase + (j * fDivs));
+			point2 = glm::vec3(-fBase + ((i + 1) * fDivs), a_fRadius, -fBase + (j * fDivs));
+			point3 = glm::vec3(-fBase + (i * fDivs), a_fRadius, -fBase + ((j + 1) * fDivs));
+			point4 = glm::vec3(-fBase + ((i + 1) * fDivs), a_fRadius, -fBase + ((j + 1) * fDivs));
+
+			AddQuad(point2, point1, point4, point3);
+
+			//Bottom
+			point1.y = -point1.y;
+			point2.y = -point2.y;
+			point3.y = -point3.y;
+			point4.y = -point4.y;
+
+			AddQuad(point1, point2, point3, point4);
+		}
+	}
 	// Adding information about color
 	CompleteMesh(a_v3Color);
 	CompileOpenGL3X();
