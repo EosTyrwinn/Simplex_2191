@@ -430,61 +430,48 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	std::cout << a_fRadius << "   " << a_nSubdivisions << std::endl;
 	//Make Sphere
 	float fAngle = (float)((2 * M_PI) / a_nSubdivisions); //Get the central angle of the triangles in radians
-	float fDivs = 1.0f / a_nSubdivisions;
-	float fBase = a_fRadius / 2.0f;
-	for (int j = 0; j <= a_nSubdivisions; j++)
+	std::vector<std::vector<glm::vec3>> spherePoints;
+	std::vector<glm::vec3> top;
+	for (int i = 0; i <= a_nSubdivisions; i++)
 	{
+		top.push_back(vector3(0, a_fRadius, 0));
+	}
+	spherePoints.push_back(top);
+
+
+	for (int j = 0; j < a_nSubdivisions-1; j++)
+	{
+		float fCircleRadius = abs(cos(j * fAngle));
+		float fCircleHeight = sin(j * fAngle);
+		std::vector<glm::vec3> circlePoints;
 		for (int i = 0; i <= a_nSubdivisions; i++)
 		{
-			//Front
-			glm::vec3 point1 = glm::vec3(-fBase + (i * fDivs), -fBase + (j * fDivs), a_fRadius);
-			glm::vec3 point2 = glm::vec3(-fBase + ((i + 1) * fDivs), -fBase + (j * fDivs), a_fRadius);
-			glm::vec3 point3 = glm::vec3(-fBase + (i * fDivs), -fBase + ((j + 1) * fDivs), a_fRadius);
-			glm::vec3 point4 = glm::vec3(-fBase + ((i + 1) * fDivs), -fBase + ((j + 1) * fDivs), a_fRadius);
+			vector3 point1 = glm::vec3(cos(i * fAngle) * fCircleRadius, fCircleHeight, sin(i * fAngle) * fCircleRadius);
+			vector3 point2 = glm::vec3(cos((i + 1) * fAngle) * fCircleRadius, fCircleHeight, sin((i + 1) * fAngle) * fCircleRadius);
+			circlePoints.push_back(point1);
+			circlePoints.push_back(point2);
 
-			AddQuad(point1, point2, point3, point4);
+			AddTri(vector3(0, fCircleHeight, 0), point1, point2);
+		}
+		spherePoints.push_back(circlePoints);
+	}
 
-			//Back
-			point1.z = -point1.z;
-			point2.z = -point2.z;
-			point3.z = -point3.z;
-			point4.z = -point4.z;
+	std::vector<glm::vec3> bottom;
+	for (int i = 0; i <= a_nSubdivisions; i++)
+	{
+		bottom.push_back(vector3(0, -a_fRadius, 0));
+	}
+	spherePoints.push_back(bottom);
 
-			AddQuad(point2, point1, point4, point3);
 
-			//Right
-			point1 = glm::vec3(a_fRadius, -fBase + (j * fDivs), -fBase + (i * fDivs));
-			point2 = glm::vec3(a_fRadius, -fBase + (j * fDivs), -fBase + ((i + 1) * fDivs));
-			point3 = glm::vec3(a_fRadius, -fBase + ((j + 1) * fDivs), -fBase + (i * fDivs));
-			point4 = glm::vec3(a_fRadius, -fBase + ((j + 1) * fDivs), -fBase + ((i + 1) * fDivs));
-			
-			AddQuad(point2, point1, point4, point3);
-
-			//Left
-			point1.x = -point1.x;
-			point2.x = -point2.x;
-			point3.x = -point3.x;
-			point4.x = -point4.x;
-
-			AddQuad(point1, point2, point3, point4);
-
-			//Top
-			point1 = glm::vec3(-fBase + (i * fDivs), a_fRadius, -fBase + (j * fDivs));
-			point2 = glm::vec3(-fBase + ((i + 1) * fDivs), a_fRadius, -fBase + (j * fDivs));
-			point3 = glm::vec3(-fBase + (i * fDivs), a_fRadius, -fBase + ((j + 1) * fDivs));
-			point4 = glm::vec3(-fBase + ((i + 1) * fDivs), a_fRadius, -fBase + ((j + 1) * fDivs));
-
-			AddQuad(point2, point1, point4, point3);
-
-			//Bottom
-			point1.y = -point1.y;
-			point2.y = -point2.y;
-			point3.y = -point3.y;
-			point4.y = -point4.y;
-
-			AddQuad(point1, point2, point3, point4);
+	for (int j = 1; j < a_nSubdivisions; j++)
+	{
+		for (int i = 0; i < a_nSubdivisions; i++)
+		{
+			AddQuad(spherePoints[i][j], spherePoints[i+1][j], spherePoints[i][j-1], spherePoints[i+1][j-1]);
 		}
 	}
+
 	// Adding information about color
 	CompleteMesh(a_v3Color);
 	CompileOpenGL3X();
