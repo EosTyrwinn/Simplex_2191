@@ -434,6 +434,7 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	
 	for (int i = 0; i < a_nSubdivisions; i++)
 	{
+		//Calculate the vertical stuff for the sphere
 		float fStackAngle = M_PI / 2 - i * fStackStep;
 		float fNextStackAngle = M_PI / 2 - (i + 1) * fStackStep;
 		float xz = a_fRadius * cosf(fStackAngle);
@@ -443,6 +444,7 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 
 		for (int j = 0; j < a_nSubdivisions; j++)
 		{
+			//calculate the horizonatl stuffs
 			float fSectorAngle = j * fSectorStep;
 			float fNextSectorAngle = (j + 1) * fSectorStep;
 
@@ -455,11 +457,12 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 			float z2 = xz1 * sinf(fNextSectorAngle);
 			float z3 = xz1 * sinf(fSectorAngle);
 
+			//create the points
 			vector3 point1 = vector3(x, y, z);
 			vector3 point2 = vector3(x1, y, z1);
 			vector3 point3 = vector3(x2, y1, z2);
 			vector3 point4 = vector3(x3, y1, z3);
-
+			//draw the quad
 			AddQuad(point2, point1, point3, point4);
 		}
 	}
