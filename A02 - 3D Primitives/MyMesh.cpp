@@ -429,49 +429,41 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 
 	std::cout << a_fRadius << "   " << a_nSubdivisions << std::endl;
 	//Make Sphere
-	float fAngle = (float)((2 * M_PI) / a_nSubdivisions); //Get the central angle of the triangles in radians
-	std::vector<std::vector<glm::vec3>> spherePoints;
-	std::vector<glm::vec3> top;
-	for (int i = 0; i <= a_nSubdivisions; i++)
+	float fSectorStep = (float)((2 * M_PI) / a_nSubdivisions); //Get the central angle of the triangles in radians
+	float fStackStep = (float)(M_PI / a_nSubdivisions);
+	
+	for (int i = 0; i < a_nSubdivisions; i++)
 	{
-		top.push_back(vector3(0, a_fRadius, 0));
-	}
-	spherePoints.push_back(top);
+		float fStackAngle = M_PI / 2 - i * fStackStep;
+		float fNextStackAngle = M_PI / 2 - (i + 1) * fStackStep;
+		float xz = a_fRadius * cosf(fStackAngle);
+		float xz1 = a_fRadius * cosf(fNextStackAngle);
+		float y = a_fRadius * sinf(fStackAngle);
+		float y1 = a_fRadius * sinf(fNextStackAngle);
 
-
-	for (int j = 0; j < a_nSubdivisions-1; j++)
-	{
-		float fCircleRadius = abs(cos(j * fAngle));
-		float fCircleHeight = sin(j * fAngle);
-		std::vector<glm::vec3> circlePoints;
-		for (int i = 0; i <= a_nSubdivisions; i++)
+		for (int j = 0; j < a_nSubdivisions; j++)
 		{
-			vector3 point1 = glm::vec3(cos(i * fAngle) * fCircleRadius, fCircleHeight, sin(i * fAngle) * fCircleRadius);
-			vector3 point2 = glm::vec3(cos((i + 1) * fAngle) * fCircleRadius, fCircleHeight, sin((i + 1) * fAngle) * fCircleRadius);
-			circlePoints.push_back(point1);
-			circlePoints.push_back(point2);
+			float fSectorAngle = j * fSectorStep;
+			float fNextSectorAngle = (j + 1) * fSectorStep;
 
-			AddTri(vector3(0, fCircleHeight, 0), point1, point2);
-		}
-		spherePoints.push_back(circlePoints);
-	}
+			float x = xz * cosf(fSectorAngle);
+			float x1 = xz * cosf(fNextSectorAngle);
+			float x2 = xz1 * cosf(fNextSectorAngle);
+			float x3 = xz1 * cosf(fSectorAngle);
+			float z = xz * sinf(fSectorAngle);
+			float z1 = xz * sinf(fNextSectorAngle);
+			float z2 = xz1 * sinf(fNextSectorAngle);
+			float z3 = xz1 * sinf(fSectorAngle);
 
-	std::vector<glm::vec3> bottom;
-	for (int i = 0; i <= a_nSubdivisions; i++)
-	{
-		bottom.push_back(vector3(0, -a_fRadius, 0));
-	}
-	spherePoints.push_back(bottom);
+			vector3 point1 = vector3(x, y, z);
+			vector3 point2 = vector3(x1, y, z1);
+			vector3 point3 = vector3(x2, y1, z2);
+			vector3 point4 = vector3(x3, y1, z3);
 
-
-	for (int j = 1; j < a_nSubdivisions; j++)
-	{
-		for (int i = 0; i < a_nSubdivisions; i++)
-		{
-			AddQuad(spherePoints[i][j], spherePoints[i+1][j], spherePoints[i][j-1], spherePoints[i+1][j-1]);
+			AddQuad(point2, point1, point3, point4);
 		}
 	}
-
+	
 	// Adding information about color
 	CompleteMesh(a_v3Color);
 	CompileOpenGL3X();
