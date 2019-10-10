@@ -150,13 +150,56 @@ void Simplex::MyCamera::CalculateProjectionMatrix(void)
 	}
 }
 
+//Find the forwards vector and move in that direction
 void MyCamera::MoveForward(float a_fDistance)
 {
-	//The following is just an example and does not take in account the forward vector (AKA view vector)
-	m_v3Position += vector3(0.0f, 0.0f,-a_fDistance);
-	m_v3Target += vector3(0.0f, 0.0f, -a_fDistance);
-	m_v3Above += vector3(0.0f, 0.0f, -a_fDistance);
+	//Find the forward vector of the camera
+	vector3 v3Forward = glm::normalize(m_v3Target - m_v3Position);
+	v3Forward *= a_fDistance;
+	//Move based on the forward vector
+	m_v3Position += v3Forward;
+	m_v3Target += v3Forward;
+	m_v3Above += v3Forward;
 }
 
-void MyCamera::MoveVertical(float a_fDistance){}//Needs to be defined
-void MyCamera::MoveSideways(float a_fDistance){}//Needs to be defined
+//Move up by the distance
+void MyCamera::MoveVertical(float a_fDistance)
+{
+	//Move up or down
+	m_v3Position += vector3(0.0f, a_fDistance, 0.0f);
+	m_v3Target += vector3(0.0f, a_fDistance, 0.0f);
+	m_v3Above += vector3(0.0f, a_fDistance, 0.0f);
+}
+
+//Find the right vector and move that way
+void MyCamera::MoveSideways(float a_fDistance)
+{
+	//Ignore the height of the camera and the target so that it 
+	//doesn't effect the speed
+	vector3 v3IgnoreHeightTarget = vector3(m_v3Target.x, 0.0f, m_v3Target.z);
+	vector3 v3IgnoreHeightPosition = vector3(m_v3Position.x, 0.0f, m_v3Position.z);
+	//find the right vector
+	vector3 v3Right = glm::normalize(v3IgnoreHeightTarget - v3IgnoreHeightPosition);
+	v3Right = vector3(v3Right.z, 0.0f, -v3Right.x);
+	v3Right *= a_fDistance;
+	//Move based on the right vector
+	m_v3Position += v3Right;
+	m_v3Target += v3Right;
+	m_v3Above += v3Right;
+}
+
+void Simplex::MyCamera::CalculateCameraRotation(float fAngleX, float fAngleY)
+{
+	//find the right vector to rotate around
+	vector3 v3Right = glm::normalize(m_v3Target - m_v3Position);
+	vector3 v3Up = glm::normalize(m_v3Above - m_v3Position);
+	v3Right = glm::normalize(glm::cross(v3Up, v3Right));
+	//Make and move the quaternion
+	quaternion qRotation = glm::angleAxis(glm::radians(fAngleY), v3Up);
+	qRotation = qRotation * glm::angleAxis(glm::radians(fAngleX), v3Right);
+	qRotation = qRotation * 5.0f;
+	//Move the forward vector by the rotation and set it as the target
+	vector3 v3Temp = m_v3Target - m_v3Position;
+	v3Temp = qRotation * v3Temp;
+	m_v3Target = m_v3Position + v3Temp;
+}

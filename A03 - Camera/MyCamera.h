@@ -230,6 +230,13 @@ public:
 	OUTPUT: ---
 	*/
 	void MoveSideways(float a_fDistance = 0.1f);
+	/*
+	USAGE: Rotates the camera based on the angles provided
+	ARGUMENTS: float fAngleX -> Angle to rotate it in the x axis
+			   float fAngleY -> Angle to rotate it in the y axis
+	OUTPUT: ---
+	*/
+	void CalculateCameraRotation(float fAngleX, float fAngleY);
 };
 
 } //namespace Simplex
