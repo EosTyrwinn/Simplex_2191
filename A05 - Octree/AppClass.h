@@ -1,5 +1,5 @@
 /*----------------------------------------------
-Programmer: Alberto Bobadilla (labigm@gmail.com)
+Programmer: Alex Herman (ajh1624@rit.edu)
 Date: 2017/06
 ----------------------------------------------*/
 #ifndef __APPLICATIONCLASS_H_
